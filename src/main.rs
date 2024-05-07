@@ -1,7 +1,7 @@
 mod rpc;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 struct Message {
     jsonrpc: String,
     id: i32,
@@ -9,7 +9,7 @@ struct Message {
     params: Option<MessageParams>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 struct MessageParams {}
 
 fn main() {
