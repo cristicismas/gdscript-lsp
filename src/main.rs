@@ -1,4 +1,6 @@
+mod logger;
 mod rpc;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
@@ -19,5 +21,6 @@ fn main() {
         method: String::from("textDocument/completion"),
         params: None,
     });
-    println!("{}", encoded)
+
+    logger::print_logs(format!("{}", encoded), None).unwrap();
 }

@@ -23,11 +23,12 @@ pub fn decode(msg: &[u8]) -> Message {
 
     let split_msg: Vec<&str> = string_msg.split("\r\n\r\n").collect();
 
-    let [content_length, content] = <[&str; 2]>::try_from(split_msg).ok().unwrap();
+    let [_content_length, content] = <[&str; 2]>::try_from(split_msg).ok().unwrap();
 
-    println!("{}\n{}", content_length, content);
-
-    let message: Message = serde_json::from_str(content).unwrap();
+    let message: Message = match serde_json::from_str(content) {
+        Ok(msg) => msg,
+        Err(err) => panic!("Cannot parse message contents to Message type: {}", err),
+    };
 
     return message;
 }
