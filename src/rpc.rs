@@ -1,4 +1,6 @@
+use super::logger;
 use super::Message;
+use core::panic;
 use serde_json::json;
 use std::convert::TryFrom;
 
@@ -31,6 +33,30 @@ pub fn decode(msg: &[u8]) -> Message {
     };
 
     return message;
+}
+
+pub fn get_content_length(line: String) -> i32 {
+    let line_parts: Vec<&str> = line.split(" ").collect();
+    if line_parts.len() != 2 {
+        panic!("line_parts needs to have length == 2.");
+    }
+
+    let length_str: &str = line_parts[1].trim();
+
+    let length: i32 = match length_str.parse() {
+        Ok(v) => v,
+        Err(err) => {
+            logger::print_logs(
+                format!("cannot parse content length to i32: {}\n", err),
+                None,
+            )
+            .unwrap();
+
+            return 0;
+        }
+    };
+
+    return length;
 }
 
 #[cfg(test)]
