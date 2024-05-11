@@ -36,8 +36,15 @@ pub fn decode(msg: &[u8]) -> Message {
 }
 
 pub fn get_content_length(line: String) -> i32 {
+    if !line.starts_with("Content-Length") {
+        logger::print_logs(format!("line doesn't start with Content-Length."), None).unwrap();
+        panic!("line_parts needs to have length == 2.");
+    }
+
     let line_parts: Vec<&str> = line.split(" ").collect();
+
     if line_parts.len() != 2 {
+        logger::print_logs(format!("line_parts needs to have length == 2."), None).unwrap();
         panic!("line_parts needs to have length == 2.");
     }
 
