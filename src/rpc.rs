@@ -2,7 +2,6 @@ use super::logger;
 use super::Message;
 use core::panic;
 use serde_json::json;
-use std::convert::TryFrom;
 
 #[derive(Debug)]
 struct DecodeError;
@@ -23,11 +22,7 @@ pub fn decode(msg: &[u8]) -> Message {
         Err(e) => panic!("Invalid utf8 sequence: {}", e),
     };
 
-    let split_msg: Vec<&str> = string_msg.split("\r\n\r\n").collect();
-
-    let [_content_length, content] = <[&str; 2]>::try_from(split_msg).ok().unwrap();
-
-    let message: Message = match serde_json::from_str(content) {
+    let message: Message = match serde_json::from_str(&string_msg.trim()) {
         Ok(msg) => msg,
         Err(err) => panic!("Cannot parse message contents to Message type: {}", err),
     };
@@ -36,6 +31,10 @@ pub fn decode(msg: &[u8]) -> Message {
 }
 
 pub fn get_content_length(line: String) -> i32 {
+    // This is the second \r\n after Content-Length
+    // we need to add this to the length.
+    let separator = "\r\n";
+
     if !line.starts_with("Content-Length") {
         logger::print_logs(format!("line doesn't start with Content-Length."), None).unwrap();
         panic!("line_parts needs to have length == 2.");
@@ -50,8 +49,11 @@ pub fn get_content_length(line: String) -> i32 {
 
     let length_str: &str = line_parts[1].trim();
 
-    let length: i32 = match length_str.parse() {
-        Ok(v) => v,
+    let length: i32 = match length_str.parse::<usize>() {
+        Ok(v) => {
+            let total_length: i32 = v as i32 + separator.len() as i32;
+            total_length
+        }
         Err(err) => {
             logger::print_logs(
                 format!("cannot parse content length to i32: {}\n", err),

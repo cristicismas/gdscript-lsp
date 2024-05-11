@@ -19,10 +19,12 @@ struct MessageParams {}
 fn main() {
     logger::clear_logs(None).unwrap();
 
-    logger::print_logs(String::from("starting lsp up..."), None).unwrap();
+    let input: Vec<u8> = reader::read_stdin();
+    let message: Message = rpc::decode(&input);
 
-    let input = reader::read_stdin();
-    let input_string = String::from(std::str::from_utf8(&input).unwrap());
-
-    logger::print_logs(format!("input: {}\n", input_string), None).unwrap();
+    logger::print_logs(
+        format!("Received message with method: {:?}\n", message.method),
+        None,
+    )
+    .unwrap();
 }
