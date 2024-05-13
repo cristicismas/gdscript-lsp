@@ -50,7 +50,7 @@ pub struct InitializeResult {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ServerCapabilities {
-    #[serde(rename = "textDecumentSync")]
+    #[serde(rename = "textDocumentSync")]
     pub text_document_sync: i32,
 }
 
