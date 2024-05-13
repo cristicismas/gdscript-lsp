@@ -3,9 +3,22 @@ mod lsp;
 mod lsp_types;
 mod reader;
 mod rpc;
+mod text_document;
 mod writer;
 
 use lsp_types::Message;
+
+pub mod macros {
+    #[macro_export(local_inner_macros)]
+    macro_rules! unwrap_or_return {
+        ($e:expr) => {
+            match $e {
+                Some(v) => v,
+                None => return,
+            }
+        };
+    }
+}
 
 fn main() {
     logger::clear_logs(None);

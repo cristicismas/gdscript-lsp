@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::text_document::TextDocumentItem;
+
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 pub struct Message {
     pub jsonrpc: String,
@@ -9,7 +11,10 @@ pub struct Message {
 }
 
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
-pub struct MessageParams {}
+pub struct MessageParams {
+    #[serde(rename = "textDocument")]
+    pub text_document: Option<TextDocumentItem>,
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Request {
@@ -39,6 +44,13 @@ pub struct Notification {
     #[serde(rename = "jsonrpc")]
     pub rpc: String,
     pub method: String,
+    pub params: Option<NotificationParams>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct NotificationParams {
+    #[serde(rename = "textDocument")]
+    pub text_document: Option<TextDocumentItem>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

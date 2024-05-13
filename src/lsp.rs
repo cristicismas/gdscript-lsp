@@ -1,9 +1,10 @@
 use super::logger;
 use super::lsp_types::{
-    InitializeResponse, InitializeResult, Message, Response, ServerCapabilities, ServerInfo,
+    InitializeResponse, InitializeResult, Message, ServerCapabilities, ServerInfo,
 };
 use super::rpc;
 use super::writer;
+use crate::unwrap_or_return;
 
 fn new_initialize_response(id: Option<i32>) -> InitializeResponse {
     return InitializeResponse {
@@ -29,10 +30,17 @@ pub fn handle_message(message: Message) {
             let encoded_message = rpc::encode(initialize_response);
 
             writer::write_stdout(encoded_message.as_bytes());
-
-            logger::print_logs("Sent an initalize response...".to_string());
         }
         "initialized" => {}
+        "textDocument/didOpen" => {
+            let params = unwrap_or_return!(message.params);
+            let text_document = unwrap_or_return!(params.text_document);
+
+            logger::print_logs(format!(
+                "File opened with text_document: {:?}",
+                text_document
+            ));
+        }
         "shutdown" => {
             logger::print_logs("Quitting program...".to_string());
             std::process::exit(0);
