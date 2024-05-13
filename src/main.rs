@@ -1,30 +1,25 @@
 mod logger;
 mod lsp;
+mod lsp_types;
 mod reader;
 mod rpc;
+mod writer;
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
-struct Message {
-    jsonrpc: String,
-    id: i32,
-    method: String,
-    params: Option<MessageParams>,
-}
-
-#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
-struct MessageParams {}
+use lsp_types::Message;
 
 fn main() {
-    logger::clear_logs(None).unwrap();
+    logger::clear_logs(None);
+    logger::print_logs("Starting up...".to_string());
 
-    let input: Vec<u8> = reader::read_stdin();
-    let message: Message = rpc::decode(&input);
+    loop {
+        let input: Vec<u8> = reader::read_stdin();
+        let message: Message = rpc::decode(&input);
 
-    logger::print_logs(
-        format!("Received message with method: {:?}\n", message.method),
-        None,
-    )
-    .unwrap();
+        logger::print_logs(format!(
+            "Received message with method: {:?} and id: {:?}\n",
+            message.method, message.id
+        ));
+
+        lsp::handle_message(message);
+    }
 }
