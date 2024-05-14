@@ -1,3 +1,4 @@
+mod analysis;
 mod logger;
 mod lsp;
 mod lsp_types;
@@ -6,6 +7,7 @@ mod rpc;
 mod text_document;
 mod writer;
 
+use analysis::state::State;
 use lsp_types::Message;
 
 pub mod macros {
@@ -24,6 +26,8 @@ fn main() {
     logger::clear_logs(None);
     logger::print_logs("Starting up...".to_string());
 
+    let mut state = State::new();
+
     loop {
         let input: Vec<u8> = reader::read_stdin();
         let message: Message = rpc::decode(&input);
@@ -33,6 +37,6 @@ fn main() {
             message.method, message.id
         ));
 
-        lsp::handle_message(message);
+        lsp::handle_message(message, &mut state);
     }
 }

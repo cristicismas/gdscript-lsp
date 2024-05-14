@@ -83,6 +83,7 @@ mod test {
             id: Some(1),
             method: String::from("textDocument/completion"),
             params: None,
+            other_fields: None,
         });
 
         assert_eq!(expected, actual);
@@ -95,6 +96,7 @@ mod test {
             id: Some(1),
             method: String::from("textDocument/completion"),
             params: None,
+            other_fields: None,
         };
 
         let actual = decode(TEST_DECODED_STRING.as_bytes());
