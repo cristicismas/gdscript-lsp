@@ -96,7 +96,7 @@ mod test {
             id: Some(1),
             method: String::from("textDocument/completion"),
             params: None,
-            other_fields: None,
+            other_fields: Some(serde_json::Value::Object(serde_json::Map::new())),
         };
 
         let actual = decode(TEST_DECODED_STRING.as_bytes());

@@ -1,14 +1,13 @@
 mod analysis;
 mod logger;
 mod lsp;
-mod lsp_types;
 mod reader;
 mod rpc;
-mod text_document;
+mod types;
 mod writer;
 
 use analysis::state::State;
-use lsp_types::Message;
+use types::lsp::Message;
 
 pub mod macros {
     #[macro_export(local_inner_macros)]

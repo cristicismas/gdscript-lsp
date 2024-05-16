@@ -1,7 +1,8 @@
 use crate::analysis::state::State;
 use crate::logger;
-use crate::lsp_types::{HoverResponse, InitializeResponse, Message};
 use crate::rpc;
+use crate::types::lsp::Message;
+use crate::types::lsp_response::{HoverResponse, InitializeResponse};
 use crate::unwrap_or_return;
 use crate::writer;
 
@@ -36,7 +37,6 @@ pub fn handle_message(message: Message, state: &mut State) {
         "textDocument/didSave" => {}
         "textDocument/hover" => {
             let hover_response = HoverResponse::new(message.id, "hello world".to_string());
-
             let encoded_message = rpc::encode(hover_response);
 
             logger::print_logs(format!("encoded message: {:?}", encoded_message));
