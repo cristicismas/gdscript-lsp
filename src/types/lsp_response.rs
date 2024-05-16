@@ -1,4 +1,4 @@
-use super::lsp::{ServerCapabilities, ServerInfo};
+use super::lsp::{Position, ServerCapabilities, ServerInfo};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -19,6 +19,7 @@ impl InitializeResponse {
                 capabilities: ServerCapabilities {
                     text_document_sync: 1,
                     hover_provider: true,
+                    definition_provider: true,
                 },
                 server_info: ServerInfo {
                     name: "GDScript_LSP".to_string(),
@@ -40,27 +41,45 @@ impl HoverResponse {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct InitializeResult {
-    pub capabilities: ServerCapabilities,
-    pub server_info: ServerInfo,
+pub struct DefinitionResponse {}
+impl DefinitionResponse {
+    pub fn new(id: Option<i32>, location: Location) -> Response {
+        return Response {
+            rpc: "2.0".to_string(),
+            id,
+            result: LspResult::DefinitionResult {
+                uri: location.uri,
+                range: location.range,
+            },
+        };
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct HoverResult {
-    contents: String,
+pub struct Location {
+    pub uri: String,
+    pub range: Range,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Range {
+    pub start: Position,
+    pub end: Position,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(untagged)]
 pub enum LspResult {
-    HoverResult {
-        contents: String,
-    },
     #[serde(rename_all = "camelCase")]
     InitializeResult {
         capabilities: ServerCapabilities,
         server_info: ServerInfo,
+    },
+    HoverResult {
+        contents: String,
+    },
+    DefinitionResult {
+        uri: String,
+        range: Range,
     },
 }

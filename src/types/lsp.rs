@@ -34,6 +34,7 @@ pub struct Position {
 pub struct ServerCapabilities {
     pub text_document_sync: i32,
     pub hover_provider: bool,
+    pub definition_provider: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

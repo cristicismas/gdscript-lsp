@@ -1,5 +1,13 @@
 use std::collections::HashMap;
 
+use crate::{
+    logger::{self, print_error},
+    types::{
+        lsp::Position,
+        lsp_response::{DefinitionResponse, HoverResponse, Location, Range, Response},
+    },
+};
+
 pub struct State {
     pub documents: HashMap<String, String>,
 }
@@ -23,4 +31,51 @@ impl State {
 
         *current_document_text = change.to_string();
     }
+
+    pub fn hover(&mut self, id: i32, uri: &str, _position: Position) -> Response {
+        let document = get_document_contents(&self.documents, uri);
+
+        logger::print_logs(format!("uri: {}", uri));
+        let contents = format!("File: {}, characters: {}", uri, document.len());
+
+        let response = HoverResponse::new(Some(id), contents);
+
+        return response;
+    }
+
+    pub fn definition(&mut self, id: i32, uri: &str, position: Position) -> Response {
+        let line_position = if position.line == 0 {
+            0
+        } else {
+            position.line - 1
+        };
+
+        let response = DefinitionResponse::new(
+            Some(id),
+            Location {
+                uri: uri.to_string(),
+                range: Range {
+                    start: Position {
+                        line: line_position,
+                        character: 0,
+                    },
+                    end: Position {
+                        line: line_position,
+                        character: 1,
+                    },
+                },
+            },
+        );
+
+        return response;
+    }
+}
+
+fn get_document_contents<'a>(documents: &'a HashMap<String, String>, uri: &str) -> &'a String {
+    let document = match documents.get(uri) {
+        Some(v) => v,
+        None => print_error("The uri should already be added to the documents map.".to_string()),
+    };
+
+    return document;
 }
