@@ -2,7 +2,6 @@ use crate::analysis::state::State;
 use crate::logger;
 use crate::rpc;
 use crate::types::lsp::Message;
-use crate::types::lsp_response::CompletionResponse;
 use crate::types::lsp_response::InitializeResponse;
 use crate::unwrap_or_return;
 use crate::writer;

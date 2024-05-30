@@ -57,9 +57,9 @@ impl CompletionResponse {
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct CompletionItem {
-    pub label: String,
-    pub detail: String,
-    pub documentation: String,
+    pub label: Option<String>,
+    pub detail: Option<String>,
+    pub documentation: Option<String>,
 }
 
 pub struct DefinitionResponse {}

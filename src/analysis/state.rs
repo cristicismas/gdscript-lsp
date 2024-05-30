@@ -11,6 +11,8 @@ use crate::{
     },
 };
 
+use super::completion::get_completion_items;
+
 pub struct State {
     pub documents: HashMap<String, String>,
 }
@@ -46,17 +48,12 @@ impl State {
     }
 
     pub fn completion(&mut self, id: i32, uri: &str) -> Response {
-        let document = get_document_contents(&self.documents, uri);
-        let contents = format!("File: {}, characters: {}", uri, document.len());
+        let file_contents = self
+            .documents
+            .get(uri)
+            .expect("Expected to find corresponding key in the documents HashMap");
 
-        let mut items: Vec<CompletionItem> = Vec::new();
-
-        items.push(CompletionItem {
-            label: "Hello World".to_string(),
-            detail: "My Detail".to_string(),
-            documentation: "My Documentation".to_string(),
-        });
-
+        let items: Vec<CompletionItem> = get_completion_items(file_contents);
         let response = CompletionResponse::new(Some(id), items);
 
         return response;
