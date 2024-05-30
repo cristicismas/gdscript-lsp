@@ -22,18 +22,18 @@ fn get_completion_for_line(line: &str) -> Option<CompletionItem> {
         return None;
     }
 
-    return get_assignment_completions(line);
+    return get_assignment_completion(line);
 }
 
 fn is_comment(line: &str) -> bool {
     return line.trim().starts_with('#');
 }
 
-fn get_assignment_completions(line: &str) -> Option<CompletionItem> {
+fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     let line_words: Vec<&str> = line.split_whitespace().collect();
 
-    // We start looping from 1 because we are only looking
-    // for assignments (they can never be at index 0)
+    // We start looping from 1 because we are looking
+    // for '=' signs (they should never be at index 0)
     for index in 1..line_words.len() {
         let current_word = line_words[index];
 
