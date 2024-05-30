@@ -9,19 +9,19 @@ Right now this project provides basic autocomplete for gdscript files, since the
 
 The LSP can currently only detect variable names if they have no type:
 
-```
+```gdscript
 var my_variable = 0
 ```
 
 or if they have a comma right after the variable name:
 
-```
+```gdscript
 var my_variable: int = 0
 ```
 
 This means that none of the following assignments will be detected by the language server:
 
-```
+```gdscript
 var my_variable:int = 0
 var my_variable :int = 0
 var my_variable : int = 0
