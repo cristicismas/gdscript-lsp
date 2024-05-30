@@ -1,30 +1,5 @@
 use crate::{logger, types::lsp_response::CompletionItem};
 
-pub fn get_completion_items(file_contents: &str) -> Vec<CompletionItem> {
-    let mut items: Vec<CompletionItem> = Vec::new();
-
-    for line in file_contents.lines() {
-        match get_completion_for_line(line) {
-            Some(item) => items.push(item),
-            None => (),
-        };
-    }
-
-    return items;
-}
-
-fn get_completion_for_line(line: &str) -> Option<CompletionItem> {
-    if is_comment(line) {
-        return None;
-    }
-
-    return get_assignment_completion(line);
-}
-
-fn is_comment(line: &str) -> bool {
-    return line.trim().starts_with('#');
-}
-
 const RESERVED_KEYWORDS: &'static [&str] = &[
     "var",
     "const",
@@ -51,6 +26,31 @@ const RESERVED_KEYWORDS: &'static [&str] = &[
     "false",
     "true",
 ];
+
+pub fn get_completion_items(file_contents: &str) -> Vec<CompletionItem> {
+    let mut items: Vec<CompletionItem> = Vec::new();
+
+    for line in file_contents.lines() {
+        match get_completion_for_line(line) {
+            Some(item) => items.push(item),
+            None => (),
+        };
+    }
+
+    return items;
+}
+
+fn get_completion_for_line(line: &str) -> Option<CompletionItem> {
+    if is_comment(line) {
+        return None;
+    }
+
+    return get_assignment_completion(line);
+}
+
+fn is_comment(line: &str) -> bool {
+    return line.trim().starts_with('#');
+}
 
 fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     let line_words: Vec<&str> = line.split_whitespace().collect();
