@@ -5,6 +5,28 @@ Hi! This is a work-in-progress LSP for GDScript.
 
 Right now this project provides basic autocomplete for gdscript files, since the official LSP doesn't seem to work right for autocomplete in neovim.
 
+## Assumptions
+
+The LSP can currently only detect variable names if they have no type:
+
+```
+var my_variable = 0
+```
+
+or if they have a comma right after the variable name:
+
+```
+var my_variable: int = 0
+```
+
+This means that none of the following assignments will be detected by the language server:
+
+```
+var my_variable:int = 0
+var my_variable :int = 0
+var my_variable : int = 0
+```
+
 
 ## Installation
 
