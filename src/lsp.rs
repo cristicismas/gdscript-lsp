@@ -2,6 +2,7 @@ use crate::analysis::state::State;
 use crate::logger;
 use crate::rpc;
 use crate::types::lsp::Message;
+use crate::types::lsp_response::CompletionResponse;
 use crate::types::lsp_response::InitializeResponse;
 use crate::unwrap_or_return;
 use crate::writer;
@@ -34,6 +35,17 @@ pub fn handle_message(message: Message, state: &mut State) {
             }
         }
         "textDocument/didSave" => {}
+        "textDocument/completion" => {
+            let params = unwrap_or_return!(message.params);
+            let id = unwrap_or_return!(message.id);
+            let text_document = unwrap_or_return!(params.text_document);
+
+            let completion_response = state.completion(id, &text_document.uri);
+
+            let encoded_message = rpc::encode(completion_response);
+
+            writer::write_stdout(encoded_message.as_bytes());
+        }
         "textDocument/hover" => {
             let params = unwrap_or_return!(message.params);
             let id = unwrap_or_return!(message.id);

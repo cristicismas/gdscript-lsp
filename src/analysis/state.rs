@@ -4,7 +4,10 @@ use crate::{
     logger::{self, print_error},
     types::{
         lsp::Position,
-        lsp_response::{DefinitionResponse, HoverResponse, Location, Range, Response},
+        lsp_response::{
+            CompletionItem, CompletionResponse, DefinitionResponse, HoverResponse, Location, Range,
+            Response,
+        },
     },
 };
 
@@ -35,10 +38,26 @@ impl State {
     pub fn hover(&mut self, id: i32, uri: &str, _position: Position) -> Response {
         let document = get_document_contents(&self.documents, uri);
 
-        logger::print_logs(format!("uri: {}", uri));
         let contents = format!("File: {}, characters: {}", uri, document.len());
 
         let response = HoverResponse::new(Some(id), contents);
+
+        return response;
+    }
+
+    pub fn completion(&mut self, id: i32, uri: &str) -> Response {
+        let document = get_document_contents(&self.documents, uri);
+        let contents = format!("File: {}, characters: {}", uri, document.len());
+
+        let mut items: Vec<CompletionItem> = Vec::new();
+
+        items.push(CompletionItem {
+            label: "Hello World".to_string(),
+            detail: "My Detail".to_string(),
+            documentation: "My Documentation".to_string(),
+        });
+
+        let response = CompletionResponse::new(Some(id), items);
 
         return response;
     }

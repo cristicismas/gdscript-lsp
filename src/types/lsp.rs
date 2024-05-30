@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::types::text_document::{TextDocumentContentChangeEvent, TextDocumentItem};
@@ -35,6 +37,7 @@ pub struct ServerCapabilities {
     pub text_document_sync: i32,
     pub hover_provider: bool,
     pub definition_provider: bool,
+    pub completion_provider: HashMap<String, String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

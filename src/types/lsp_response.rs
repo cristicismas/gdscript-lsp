@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::lsp::{Position, ServerCapabilities, ServerInfo};
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +22,7 @@ impl InitializeResponse {
                     text_document_sync: 1,
                     hover_provider: true,
                     definition_provider: true,
+                    completion_provider: HashMap::new(),
                 },
                 server_info: ServerInfo {
                     name: "GDScript_LSP".to_string(),
@@ -39,6 +42,24 @@ impl HoverResponse {
             result: LspResult::HoverResult { contents },
         };
     }
+}
+
+pub struct CompletionResponse {}
+impl CompletionResponse {
+    pub fn new(id: Option<i32>, items: Vec<CompletionItem>) -> Response {
+        return Response {
+            rpc: "2.0".to_string(),
+            id,
+            result: LspResult::CompletionResult { items },
+        };
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct CompletionItem {
+    pub label: String,
+    pub detail: String,
+    pub documentation: String,
 }
 
 pub struct DefinitionResponse {}
@@ -77,6 +98,9 @@ pub enum LspResult {
     },
     HoverResult {
         contents: String,
+    },
+    CompletionResult {
+        items: Vec<CompletionItem>,
     },
     DefinitionResult {
         uri: String,
