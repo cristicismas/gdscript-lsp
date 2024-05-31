@@ -14,6 +14,8 @@ const RESERVED_KEYWORDS: &'static [&str] = &[
     "Vector3f",
     "Vector4",
     "Vector4f",
+    "Sprite2D",
+    "AnimatedSprite2D",
     "String",
     "StrinName",
     "NodePath",
@@ -60,7 +62,7 @@ fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     for index in 1..line_words.len() {
         let current_word = line_words[index];
 
-        if current_word == "=" {
+        if current_word == "=" || current_word == ":=" {
             let prev_word = line_words[index - 1];
 
             // if prev_word is in reserved_keyword, get the word before that

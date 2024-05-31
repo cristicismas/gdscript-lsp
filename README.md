@@ -19,6 +19,12 @@ or if they have a comma right after the variable name:
 var my_variable: int = 0
 ```
 
+Implicit typing also works:
+
+```gdscript
+var my_variable := 0
+```
+
 This means that none of the following assignments will be detected by the language server:
 
 ```gdscript
@@ -27,6 +33,10 @@ var my_variable :int = 0
 var my_variable : int = 0
 ```
 
+And some node types, or custom classes might also not work:
+```gdscript
+var my_variable: MyVariableClass = 0
+```
 
 ## Installation
 
