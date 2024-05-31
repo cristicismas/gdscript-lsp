@@ -1,33 +1,4 @@
-use crate::{logger, types::lsp_response::CompletionItem};
-
-const RESERVED_KEYWORDS: &'static [&str] = &[
-    "var",
-    "const",
-    "enum",
-    "func",
-    "extends",
-    "class_name",
-    "var",
-    "Vector2",
-    "Vector2f",
-    "Vector3",
-    "Vector3f",
-    "Vector4",
-    "Vector4f",
-    "Sprite2D",
-    "AnimatedSprite2D",
-    "String",
-    "StrinName",
-    "NodePath",
-    "Node",
-    "Color",
-    "float",
-    "bool",
-    "int",
-    "null",
-    "false",
-    "true",
-];
+use crate::types::lsp_response::CompletionItem;
 
 pub fn get_completion_items(file_contents: &str) -> Vec<CompletionItem> {
     let mut items: Vec<CompletionItem> = Vec::new();
@@ -57,42 +28,51 @@ fn is_comment(line: &str) -> bool {
 fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     let line_words: Vec<&str> = line.split_whitespace().collect();
 
-    // We start looping from 1 because we are looking
-    // for '=' signs (they should never be at index 0)
-    for index in 1..line_words.len() {
+    for index in 0..line_words.len() {
         let current_word = line_words[index];
+        if index + 1 < line_words.len() {
+            let next_word = line_words[index + 1];
 
-        if current_word == "=" || current_word == ":=" {
-            let prev_word = line_words[index - 1];
-
-            // if prev_word is in reserved_keyword, get the word before that
-            if RESERVED_KEYWORDS.contains(&prev_word) {
-                let prev_prev_word = line_words[index - 2];
-
-                let variable_name = remove_suffix(prev_prev_word, ":");
-
+            if let Some(variable_name) = try_get_variable(current_word, next_word) {
                 let completion_item = CompletionItem {
                     label: Some(variable_name.to_string()),
-                    detail: Some("Test LSP".to_string()),
+                    detail: Some("Godot Custom LSP".to_string()),
                     documentation: None,
                 };
-
-                logger::print_logs(format!(
-                    "complex pair: {} --- {}",
-                    variable_name,
-                    line_words[index + 1]
-                ));
 
                 return Some(completion_item);
-            } else {
+            }
+
+            if let Some(function_name) = try_get_function(current_word, next_word) {
                 let completion_item = CompletionItem {
-                    label: Some(prev_word.to_string()),
-                    detail: Some("Test LSP".to_string()),
+                    label: Some(function_name.to_string()),
+                    detail: Some("Godot Custom LSP".to_string()),
                     documentation: None,
                 };
+
                 return Some(completion_item);
             }
         }
+    }
+
+    return None;
+}
+
+fn try_get_variable<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a str> {
+    if current_word == "var" || current_word == "const" {
+        let variable_name = remove_suffix(next_word, ":");
+
+        return Some(variable_name);
+    }
+
+    return None;
+}
+
+fn try_get_function<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a str> {
+    if current_word == "func" {
+        let mut split_function_declaration = next_word.split('(');
+
+        return split_function_declaration.next();
     }
 
     return None;
