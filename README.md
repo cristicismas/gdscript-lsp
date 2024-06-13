@@ -1,4 +1,4 @@
-# GDScript LSP (WIP)
+# GDScript LSP
 
 Hi! This is a work-in-progress LSP for GDScript.
 
