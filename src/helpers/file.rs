@@ -1,6 +1,8 @@
 use core::panic;
 use std::path::{Path, PathBuf};
 
+use crate::logger;
+
 enum ProjectFileError {
     RootFindFailure,
     NoProjectParent,
@@ -21,7 +23,11 @@ pub fn get_project_directory(file_uri: &str) -> Option<&Path> {
         Ok(v) => Some(v),
         Err(e) => match e {
             ProjectFileError::RootFindFailure => {
-                panic!("Maximum recursions reached. Project nesting is too high.")
+                logger::print_logs(
+                    "Warning: Maximum recursions reached. Project nesting is too high.".to_string(),
+                );
+
+                None
             }
             ProjectFileError::NoProjectParent => None,
         },
