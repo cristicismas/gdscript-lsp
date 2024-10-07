@@ -1,4 +1,3 @@
-use core::panic;
 use std::path::{Path, PathBuf};
 
 use crate::logger;
