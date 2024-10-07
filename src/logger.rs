@@ -3,7 +3,7 @@ use std::{
     io::Write,
 };
 
-const LOGS_FOLDER: &str = "/home/cristi/personal/godot-lsp/logs";
+const LOGS_FOLDER: &str = "/home/cristi/personal/gdscript-lsp/logs";
 const DEFAULT_LOGS_FILE: &str = "logs.txt";
 
 pub fn print_logs(message: String) {

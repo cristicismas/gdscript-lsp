@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use crate::logger;
 
-enum ProjectFileError {
+pub enum ProjectFileError {
     RootFindFailure,
     NoProjectParent,
 }
@@ -33,6 +33,41 @@ pub fn get_project_directory(file_uri: &str) -> Option<&Path> {
     };
 
     return project_parent;
+}
+
+// TODO: ignore what is in .gitignore / commonly ignored files
+pub fn recursive_find_gd_files(
+    directory_path: PathBuf,
+    current_recursions: u8,
+) -> Option<Vec<PathBuf>> {
+    let mut gd_file_paths: Vec<PathBuf> = Vec::new();
+
+    if !directory_path.is_dir() {
+        return None;
+    }
+
+    for entry in directory_path.read_dir().unwrap() {
+        if let Ok(entry) = entry {
+            let entry_path: PathBuf = entry.path();
+
+            if let Some(extension) = entry_path.extension() {
+                if extension == "gd" {
+                    gd_file_paths.push(entry_path.clone());
+                }
+            }
+
+            if entry_path.is_dir() && current_recursions < DIRECTORY_TRAVERSAL_LIMIT {
+                match recursive_find_gd_files(entry_path, current_recursions + 1) {
+                    Some(child_gd_paths) => {
+                        gd_file_paths.extend(child_gd_paths);
+                    }
+                    None => (),
+                }
+            }
+        }
+    }
+
+    Some(gd_file_paths)
 }
 
 fn is_project_parent(uri: &Path) -> bool {
