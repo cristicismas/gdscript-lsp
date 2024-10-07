@@ -30,13 +30,14 @@ fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
 
     for index in 0..line_words.len() {
         let current_word = line_words[index];
+
         if index + 1 < line_words.len() {
             let next_word = line_words[index + 1];
 
             if let Some(variable_name) = try_get_variable(current_word, next_word) {
                 let completion_item = CompletionItem {
                     label: Some(variable_name.to_string()),
-                    detail: Some("Godot Custom LSP".to_string()),
+                    detail: Some("Variable".to_string()),
                     documentation: None,
                 };
 
@@ -46,7 +47,7 @@ fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
             if let Some(function_name) = try_get_function(current_word, next_word) {
                 let completion_item = CompletionItem {
                     label: Some(function_name.to_string()),
-                    detail: Some("Godot Custom LSP".to_string()),
+                    detail: Some("Function".to_string()),
                     documentation: None,
                 };
 

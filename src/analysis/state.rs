@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    logger::{self, print_error},
+    logger::print_error,
     types::{
         lsp::Position,
         lsp_response::{
@@ -12,20 +12,33 @@ use crate::{
 };
 
 use super::completion::get_completion_items;
+use super::project::analyze_project;
 
 pub struct State {
     pub documents: HashMap<String, String>,
+    pub did_initialize: bool,
 }
 
 impl State {
     pub fn new() -> Self {
         return State {
             documents: HashMap::new(),
+            did_initialize: false,
         };
     }
 
     pub fn open_document(&mut self, uri: &str, text: &str) -> () {
         self.documents.insert(uri.to_string(), text.to_string());
+
+        if self.did_initialize {
+            return;
+        };
+
+        // TODO: go through parent directories until you find project.godot, then you
+        // have the parent folder of the project. After this, analyze all files for
+        // better autocomplete suggestions
+        analyze_project(uri);
+        self.did_initialize = true;
     }
 
     pub fn update_document(&mut self, uri: &str, change: &str) -> () {
