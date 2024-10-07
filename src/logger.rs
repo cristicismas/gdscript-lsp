@@ -3,6 +3,7 @@ use std::{
     io::Write,
 };
 
+// TODO: make logs folder dynamic based on lsp directory / linux logs directory
 const LOGS_FOLDER: &str = "/home/cristi/personal/gdscript-lsp/logs";
 const DEFAULT_LOGS_FILE: &str = "logs.txt";
 
