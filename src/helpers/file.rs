@@ -13,6 +13,8 @@ const DIRECTORY_TRAVERSAL_LIMIT: u8 = 50;
 // file_uri starts with file:// (7 characters)
 const CHARACTERS_TO_CUT: usize = 7;
 
+const PATHS_TO_IGNORE: &'static [&'static str] = &[".godot/", "export/", "addons/"];
+
 pub fn get_project_directory(file_uri: &str) -> Option<&Path> {
     let valid_uri = &file_uri[CHARACTERS_TO_CUT..];
 
@@ -35,7 +37,6 @@ pub fn get_project_directory(file_uri: &str) -> Option<&Path> {
     return project_parent;
 }
 
-// TODO: ignore what is in .gitignore / commonly ignored files
 pub fn recursive_find_gd_files(
     directory_path: PathBuf,
     current_recursions: u8,
@@ -49,6 +50,10 @@ pub fn recursive_find_gd_files(
     for entry in directory_path.read_dir().unwrap() {
         if let Ok(entry) = entry {
             let entry_path: PathBuf = entry.path();
+
+            if should_ignore_path(&entry_path) {
+                continue;
+            }
 
             if let Some(extension) = entry_path.extension() {
                 if extension == "gd" {
@@ -68,6 +73,20 @@ pub fn recursive_find_gd_files(
     }
 
     Some(gd_file_paths)
+}
+
+fn should_ignore_path(path: &PathBuf) -> bool {
+    if let Some(path_str) = path.to_str() {
+        for ignore_path in PATHS_TO_IGNORE {
+            if path_str.contains(ignore_path) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    return true;
 }
 
 fn is_project_parent(uri: &Path) -> bool {

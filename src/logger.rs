@@ -1,10 +1,12 @@
 use std::{
     fs::{self, read_to_string, File},
     io::Write,
+    path::PathBuf,
 };
 
-// TODO: make logs folder dynamic based on lsp directory / linux logs directory
-const LOGS_FOLDER: &str = "/home/cristi/personal/gdscript-lsp/logs";
+use home::home_dir;
+
+const LOGS_FOLDER: &str = ".local/state/gdscript-lsp/logs";
 const DEFAULT_LOGS_FILE: &str = "logs.txt";
 
 pub fn print_logs(message: String) {
@@ -21,10 +23,8 @@ pub fn print_error(message: String) -> ! {
 }
 
 fn try_print_logs(message: String, file_name: Option<&str>) -> std::io::Result<()> {
-    fs::create_dir_all(LOGS_FOLDER)?;
-
-    let file_name = file_name.unwrap_or(DEFAULT_LOGS_FILE);
-    let file_location = format!("{}/{}", LOGS_FOLDER, file_name);
+    let file_location = get_logs_path(file_name);
+    fs::create_dir_all(get_logs_folder())?;
 
     let file_contents = read_to_string(file_location.clone()).unwrap();
 
@@ -38,12 +38,35 @@ fn try_print_logs(message: String, file_name: Option<&str>) -> std::io::Result<(
 }
 
 pub fn clear_logs(file_name: Option<&str>) {
-    fs::create_dir_all(LOGS_FOLDER).unwrap();
+    let file_location = get_logs_path(file_name);
 
-    let file_name = file_name.unwrap_or(DEFAULT_LOGS_FILE);
-
-    let file_location = format!("{}/{}", LOGS_FOLDER, file_name);
+    fs::create_dir_all(get_logs_folder()).unwrap();
 
     let mut file = File::create(file_location).unwrap();
     file.write_all(&String::from("").into_bytes()).unwrap();
+}
+
+fn get_home_dir() -> PathBuf {
+    match home_dir() {
+        Some(value) => value,
+        None => panic!("Unable to get home directory."),
+    }
+}
+
+fn get_logs_folder() -> PathBuf {
+    let home_dir = get_home_dir();
+
+    let logs_folder = home_dir.join(LOGS_FOLDER);
+
+    return logs_folder;
+}
+
+fn get_logs_path(file_name: Option<&str>) -> PathBuf {
+    let home_dir = get_home_dir();
+
+    let file_name = file_name.unwrap_or(DEFAULT_LOGS_FILE);
+
+    let file_location = home_dir.join(LOGS_FOLDER).join(file_name);
+
+    return file_location;
 }
