@@ -66,6 +66,11 @@ impl State {
             .get(uri)
             .expect("Expected to find corresponding key in the documents HashMap");
 
+        // TODO:
+        // 1. get related items from file_contents (check node references, onready, variable types)
+        // 2. get file_contents of all files that are related
+        // 3. pass them into get_completion_items
+
         let items: Vec<CompletionItem> = get_completion_items(file_contents);
         let response = CompletionResponse::new(Some(id), items);
 
