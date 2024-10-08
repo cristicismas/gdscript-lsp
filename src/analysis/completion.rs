@@ -25,6 +25,7 @@ fn is_comment(line: &str) -> bool {
     return line.trim().starts_with('#');
 }
 
+// TODO: Return multiple Option<CompletionItem> (in case we have function parameters for example)
 fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     let line_words: Vec<&str> = line.split_whitespace().collect();
 
@@ -53,6 +54,16 @@ fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
 
                 return Some(completion_item);
             }
+
+            if let Some(parameter_name) = try_get_parameter(current_word, next_word) {
+                let completion_item = CompletionItem {
+                    label: Some(parameter_name.to_string()),
+                    detail: Some("Parameter".to_string()),
+                    documentation: None,
+                };
+
+                return Some(completion_item);
+            }
         }
     }
 
@@ -76,6 +87,11 @@ fn try_get_function<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a
         return split_function_declaration.next();
     }
 
+    return None;
+}
+
+// TODO: get parameter names
+fn try_get_parameter<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a str> {
     return None;
 }
 
