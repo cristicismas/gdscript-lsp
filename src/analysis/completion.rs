@@ -1,4 +1,4 @@
-use crate::{logger, types::lsp_response::CompletionItem};
+use crate::types::lsp_response::CompletionItem;
 
 pub fn get_completion_items(file_contents: &str) -> Vec<CompletionItem> {
     let mut items: Vec<CompletionItem> = Vec::new();
@@ -27,7 +27,6 @@ fn get_completions_for_line(line: &str) -> Vec<CompletionItem> {
 
     completion_items.extend(parameter_completions);
 
-    logger::print_logs(format!("completion items: {:?}", completion_items));
     return completion_items;
 }
 
