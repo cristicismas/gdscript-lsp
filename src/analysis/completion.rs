@@ -112,8 +112,10 @@ fn get_parameter_completions(line: &str) -> Vec<CompletionItem> {
     for parameter in parameters {
         let split_parameter: Vec<&str> = parameter.split(':').collect();
 
+        let parameter_name = split_parameter[0].trim().to_string();
+
         let completion_item = CompletionItem {
-            label: Some(split_parameter[0].to_string()),
+            label: Some(parameter_name),
             detail: Some("Parameter".to_string()),
             documentation: None,
         };
