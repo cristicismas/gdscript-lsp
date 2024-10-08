@@ -1,31 +1,40 @@
-use crate::types::lsp_response::CompletionItem;
+use crate::{logger, types::lsp_response::CompletionItem};
 
 pub fn get_completion_items(file_contents: &str) -> Vec<CompletionItem> {
     let mut items: Vec<CompletionItem> = Vec::new();
 
     for line in file_contents.lines() {
-        match get_completion_for_line(line) {
-            Some(item) => items.push(item),
-            None => (),
-        };
+        items.extend(get_completions_for_line(line))
     }
 
     return items;
 }
 
-fn get_completion_for_line(line: &str) -> Option<CompletionItem> {
+fn get_completions_for_line(line: &str) -> Vec<CompletionItem> {
+    let mut completion_items: Vec<CompletionItem> = vec![];
+
     if is_comment(line) {
-        return None;
+        return vec![];
     }
 
-    return get_assignment_completion(line);
+    let assignment_completion = get_assignment_completion(line);
+    match assignment_completion {
+        Some(item) => completion_items.push(item),
+        None => (),
+    }
+
+    let parameter_completions = get_parameter_completions(line);
+
+    completion_items.extend(parameter_completions);
+
+    logger::print_logs(format!("completion items: {:?}", completion_items));
+    return completion_items;
 }
 
 fn is_comment(line: &str) -> bool {
     return line.trim().starts_with('#');
 }
 
-// TODO: Return multiple Option<CompletionItem> (in case we have function parameters for example)
 fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
     let line_words: Vec<&str> = line.split_whitespace().collect();
 
@@ -49,16 +58,6 @@ fn get_assignment_completion(line: &str) -> Option<CompletionItem> {
                 let completion_item = CompletionItem {
                     label: Some(function_name.to_string()),
                     detail: Some("Function".to_string()),
-                    documentation: None,
-                };
-
-                return Some(completion_item);
-            }
-
-            if let Some(parameter_name) = try_get_parameter(current_word, next_word) {
-                let completion_item = CompletionItem {
-                    label: Some(parameter_name.to_string()),
-                    detail: Some("Parameter".to_string()),
                     documentation: None,
                 };
 
@@ -90,9 +89,39 @@ fn try_get_function<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a
     return None;
 }
 
-// TODO: get parameter names
-fn try_get_parameter<'a>(current_word: &'a str, next_word: &'a str) -> Option<&'a str> {
-    return None;
+fn get_parameter_completions(line: &str) -> Vec<CompletionItem> {
+    let mut completion_items: Vec<CompletionItem> = vec![];
+
+    if !line.trim().starts_with("func ") {
+        return vec![];
+    }
+
+    let open_parenthesis_index = match line.find('(') {
+        Some(v) => v + 1,
+        None => return vec![],
+    };
+    let closed_parenthesis_index = match line.find(')') {
+        Some(v) => v,
+        None => return vec![],
+    };
+
+    let parameters_substring = &line[open_parenthesis_index..closed_parenthesis_index];
+
+    let parameters = parameters_substring.split(',');
+
+    for parameter in parameters {
+        let split_parameter: Vec<&str> = parameter.split(':').collect();
+
+        let completion_item = CompletionItem {
+            label: Some(split_parameter[0].to_string()),
+            detail: Some("Parameter".to_string()),
+            documentation: None,
+        };
+
+        completion_items.push(completion_item);
+    }
+
+    return completion_items;
 }
 
 fn remove_suffix<'a>(s: &'a str, suffix: &str) -> &'a str {

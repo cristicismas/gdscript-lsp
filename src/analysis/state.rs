@@ -34,9 +34,6 @@ impl State {
             return;
         };
 
-        // TODO: go through parent directories until you find project.godot, then you
-        // have the parent folder of the project. After this, analyze all files for
-        // better autocomplete suggestions
         analyze_project(uri);
         self.did_initialize = true;
     }
