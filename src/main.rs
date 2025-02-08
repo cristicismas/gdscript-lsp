@@ -1,5 +1,6 @@
 mod analysis;
 mod helpers;
+mod lexer;
 mod logger;
 mod lsp;
 mod reader;

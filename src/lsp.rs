@@ -45,17 +45,6 @@ pub fn handle_message(message: Message, state: &mut State) {
 
             writer::write_stdout(encoded_message.as_bytes());
         }
-        "textDocument/hover" => {
-            let params = unwrap_or_return!(message.params);
-            let id = unwrap_or_return!(message.id);
-            let text_document = unwrap_or_return!(params.text_document);
-            let position = unwrap_or_return!(params.position);
-
-            let hover_response = state.hover(id, &text_document.uri, position);
-            let encoded_message = rpc::encode(hover_response);
-
-            writer::write_stdout(encoded_message.as_bytes());
-        }
         "textDocument/definition" => {
             let params = unwrap_or_return!(message.params);
             let id = unwrap_or_return!(message.id);

@@ -15,7 +15,4 @@ pub fn analyze_project(file_uri: &str) -> () {
         unwrap_or_return!(recursive_find_gd_files(project_directory.to_path_buf(), 0));
 
     logger::print_logs(format!("project files: {:?}", project_files));
-
-    // TODO: Need to build a tokenizer / lexical analyzer to get proper completion and
-    // understanding of the project
 }

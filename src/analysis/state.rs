@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
+    lexer::Lexer,
     logger::print_error,
     types::{
         lsp::Position,
@@ -67,6 +68,10 @@ impl State {
         // 1. get related items from file_contents (check node references, onready, variable types)
         // 2. get file_contents of all files that are related
         // 3. pass them into get_completion_items
+
+        let file_lexer = Lexer::new(uri, file_contents);
+        // TODO: pass the tokens into get_completion_items after the lexer is done
+        let tokens = file_lexer.tokens;
 
         let items: Vec<CompletionItem> = get_completion_items(file_contents);
         let response = CompletionResponse::new(Some(id), items);
