@@ -24,7 +24,7 @@ __Disclaimer__: I've only tried to set this up with the lazyvim package manager,
 
 1. Clone the repo.
 
-2. Compile the project with `cargo build`.
+2. Compile the project with `cargo build --release`.
 
 3. In your neovim config directory, add the following structure:
 
@@ -38,8 +38,8 @@ __Disclaimer__: I've only tried to set this up with the lazyvim package manager,
 
 ```lua
 local client = vim.lsp.start_client {
-  name = 'godot-lsp-test',
-  cmd = { '<path-to-cloned-project>/target/debug/godot-lsp' },
+  name = 'godot-lsp',
+  cmd = { '<path-to-cloned-project>/target/release/godot-lsp' },
 }
 
 if not client then
