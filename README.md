@@ -10,7 +10,9 @@ Right now this project provides basic autocomplete for gdscript variables and fu
 
 __Disclaimer__: I've only tried to set this up with the lazyvim package manager, but if you know what you're doing, you should be able to get this to work with other setups as well.
 
-### Requirements
+You can get the linux binary from the __releases__ page, or you can build it yourself following the instructions below:
+
+### Build Requirements
 
 1. rustup v1.26.0 or higher
 
